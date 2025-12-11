@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Buddy Waitlist</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 480px;
+        margin: 40px auto;
+        padding: 20px;
+      }
+      input {
+        width: 100%;
+        padding: 12px;
+        margin: 8px 0;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+      }
+      button {
+        width: 100%;
+        padding: 12px;
+        background-color: black;
+        color: white;
+        border-radius: 6px;
+        border: none;
+      }
+      #waitlist-message {
+        margin-top: 12px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Join the Buddy Waitlist</h1>
+    <p>You'll be notified as soon as early access opens.</p>
+
+    <form id="waitlist-form">
+      <input
+        type="email"
+        id="waitlist-email"
+        placeholder="you@example.com"
+        required
+      />
+      <button type="submit">Join the waitlist</button>
+    </form>
+
+    <p id="waitlist-message"></p>
+
+    <script>
+      const form = document.getElementById("waitlist-form");
+      const emailInput = document.getElementById("waitlist-email");
+      const messageEl = document.getElementById("waitlist-message");
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        messageEl.textContent = "";
+
+        const email = emailInput.value.trim().toLowerCase();
+
+        try {
+          const res = await fetch(
+            "https://buddy-backend-l67y.onrender.com/api/waitlist",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ email }),
+            }
+          );
+
+          const data = await res.json().catch(() => ({}));
+
+          if (res.ok) {
+            messageEl.textContent =
+              data.message || "You're on the waitlist!";
+            form.reset();
+          } else {
+            messageEl.textContent =
+              data.message || "Something went wrong.";
+          }
+        } catch (err) {
+          messageEl.textContent = "Network error. Try again.";
+        }
+      });
+    </script>
+  </body>
+</html>
